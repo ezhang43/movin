@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vacating Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2EC;
+    --surface: #FFFDF9;
+    --border: #D8D2C4;
+    --border-light: #EAE5DA;
+    --text: #1C1A16;
+    --text-muted: #7A7468;
+    --text-faint: #ADA89F;
+    --accent: #2D6A4F;
+    --accent-light: #E8F4EF;
+    --accent-mid: #52B788;
+    --amber: #9A5E0A;
+    --amber-light: #FEF3E2;
+    --red: #922B21;
+    --red-light: #FDEDEC;
+    --ink: #2C2922;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-item svg { flex-shrink: 0; }
+
+  .deadline { color: var(--red); font-weight: 500; }
+
+  .progress-strip {
+    margin-top: 1.5rem;
+    background: var(--border-light);
+    border-radius: 999px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent-mid);
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    margin-top: 0.5rem;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .progress-label strong { color: var(--accent); }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-light);
+    background: #FDFBF6;
+  }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--border-light);
+  }
+
+  .section-icon svg { width: 14px; height: 14px; color: var(--text-muted); }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .section-progress {
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background 0.12s;
+    user-select: none;
+  }
+
+  .task:last-child { border-bottom: none; }
+  .task:hover { background: #FDFCF8; }
+  .task:active { background: var(--border-light); }
+
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .task.done .checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkbox svg {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.15s;
+  }
+
+  .task.done .checkbox svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .task-content { flex: 1; }
+
+  .task-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    transition: color 0.15s;
+  }
+
+  .task.done .task-text {
+    color: var(--text-faint);
+    text-decoration: line-through;
+  }
+
+  .task-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .tags {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+
+  .tag-urgent { background: var(--red-light); color: var(--red); }
+  .tag-pet { background: var(--amber-light); color: var(--amber); }
+
+  .footer {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 28px; }
+    .task { padding: 12px 14px; }
+    .section-header { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">Apartment move-out</div>
+    <h1>Vacating Checklist</h1>
+    <div class="meta-row">
+      <span class="meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Key return deadline: <span class="deadline">4 June 2026</span>
+      </span>
+      <span class="meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        2 Australia Ave, Sydney Olympic Park · 10am–4pm Mon–Fri
+      </span>
+    </div>
+    <div class="progress-strip"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-label" id="progress-label">0 of 0 tasks completed</div>
+  </header>
+
+  <main id="checklist"></main>
+
+  <footer class="footer">
+    Progress is saved in your browser. Check off tasks as you complete them.
+  </footer>
+
+</div>
+
+<script>
+const sections = [
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>`,
+    title: "Item disposal",
+    tasks: [
+      { text: "Follow correct rubbish & bulk item disposal instructions", note: "Incorrect disposal may incur an Owner's Corporation penalty" },
+      { text: "Contact building manager for any bulk item disposal queries", note: "darlingsquarenorth@divergentps.com.au" }
+    ]
+  },
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+    title: "Vacating balance",
+    tasks: [
+      { text: "Review outstanding rent & invoice balance", note: "Current balance: $3,339.48 — refer to attached status report" },
+      { text: "Review the final inspection guide in the email attachment" }
+    ]
+  },
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+    title: "Cleaning & repairs",
+    tasks: [
+      { text: "Book a professional cleaner before vacating date", note: "Felix Koay – 0450 185 525 · Sammy Zhou – 0412 128 982 · SydneyOne – 0493 976 710" },
+      { text: "Inspect unit for any new damage caused during tenancy" },
+      { text: "Arrange repairs for all outstanding issues before moving out", note: "You may not be able to return to fix issues once new occupancy begins", urgent: true },
+      { text: "Book professional carpet cleaning", note: "Compulsory if a pet was kept in the unit", pet: true },
+      { text: "Book pest control treatment", note: "Compulsory if a pet was kept in the unit", pet: true }
+    ]
+  },
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`,
+    title: "Key return & inspection",
+    tasks: [
+      { text: "Return all keys & access devices to office by 4 June 2026", note: "2 Australia Ave, Sydney Olympic Park · Mon–Fri 10am–4pm", urgent: true },
+      { text: "Confirm outgoing inspection time with the agent" }
+    ]
+  },
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M13 2v7h7"/></svg>`,
+    title: "Utilities",
+    tasks: [
+      { text: "Extend electricity & gas for at least 7 days past vacate date", note: "Required for the outgoing inspection and any tradesperson rectification work", urgent: true },
+      { text: "Schedule utility disconnection only after inspection is complete" }
+    ]
+  },
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+    title: "Open inspections",
+    tasks: [
+      { text: "Watch for written notice of open inspection times from the agent", note: "Usually 15-minute sessions on a weekday afternoon or Saturday" },
+      { text: "Ensure property is tidy and presentable during open inspections" }
+    ]
+  },
+  {
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
+    title: "Bond settlement",
+    tasks: [
+      { text: "Ensure all issues raised at outgoing inspection are rectified", note: "Unresolved items will delay your bond release", urgent: true },
+      { text: "Allow 5–10 business days after outgoing inspection for bond to be processed" }
+    ]
+  }
+];
+
+const STORAGE_KEY = 'vacating_checklist_2026';
+let checked = {};
+try { const r = localStorage.getItem(STORAGE_KEY); if (r) checked = JSON.parse(r); } catch(e) {}
+
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(checked)); } catch(e) {} }
+
+function updateProgress() {
+  let total = 0, done = 0;
+  sections.forEach((s, si) => s.tasks.forEach((t, ti) => {
+    total++;
+    if (checked[si + '-' + ti]) done++;
+    const sp = document.getElementById('sp-' + si);
+    if (sp) {
+      let sd = s.tasks.filter((_, i) => checked[si + '-' + i]).length;
+      sp.textContent = sd + ' / ' + s.tasks.length;
+    }
+  }));
+  const pct = total ? (done / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  const lbl = document.getElementById('progress-label');
+  lbl.innerHTML = '<strong>' + done + ' of ' + total + '</strong> tasks completed';
+}
+
+function render() {
+  const el = document.getElementById('checklist');
+  el.innerHTML = '';
+  sections.forEach((s, si) => {
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = `<div class="section-header">
+      <div class="section-icon">${s.icon}</div>
+      <span class="section-title">${s.title}</span>
+      <span class="section-progress" id="sp-${si}">0 / ${s.tasks.length}</span>
+    </div>`;
+    s.tasks.forEach((t, ti) => {
+      const id = si + '-' + ti;
+      const isDone = !!checked[id];
+      const row = document.createElement('div');
+      row.className = 'task' + (isDone ? ' done' : '');
+      row.setAttribute('role', 'checkbox');
+      row.setAttribute('aria-checked', isDone);
+      row.setAttribute('tabindex', '0');
+      let tags = '';
+      if (t.urgent) tags += '<span class="tag tag-urgent">Important</span>';
+      if (t.pet) tags += '<span class="tag tag-pet">If pet</span>';
+      row.innerHTML = `
+        <div class="checkbox">
+          <svg width="11" height="9" viewBox="0 0 11 9" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4.5 4 7.5 10 1"/></svg>
+        </div>
+        <div class="task-content">
+          <div class="task-text">${t.text}${tags ? '<span class="tags">' + tags + '</span>' : ''}</div>
+          ${t.note ? '<div class="task-note">' + t.note + '</div>' : ''}
+        </div>`;
+      const toggle = () => {
+        checked[id] = !checked[id];
+        row.classList.toggle('done', checked[id]);
+        row.setAttribute('aria-checked', checked[id]);
+        save();
+        updateProgress();
+      };
+      row.addEventListener('click', toggle);
+      row.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); } });
+      sec.appendChild(row);
+    });
+    el.appendChild(sec);
+  });
+  updateProgress();
+}
+
+render();
+</script>
+</body>
+</html>
